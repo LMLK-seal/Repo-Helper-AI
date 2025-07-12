@@ -69,7 +69,7 @@ Follow these steps to get your own Repo Helper AI running.
 ### 2. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/repo-helper-ai.git # Replace with your repo URL
+git clone https://github.com/LMLK-seal/repo-helper-ai.git # Replace with your repo URL
 cd repo-helper-ai
 ```
 
@@ -77,10 +77,6 @@ cd repo-helper-ai
 
 This project uses a `.env` file to manage secret keys and configuration.
 
-*   Make a copy of the example file:
-    ```bash
-    cp .env.example .env
-    ```
 *   Open the `.env` file and fill in your details:
     ```dotenv
     GITHUB_TOKEN=YOUR_GITHUB_PAT
@@ -109,8 +105,6 @@ pip install -r requirements.txt
 ```
 
 ---
-
---
 
 🛠️ Usage (Local Development)
 -----------------------------
