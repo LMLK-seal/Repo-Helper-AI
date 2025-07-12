@@ -69,7 +69,7 @@ Follow these steps to get your own Repo Helper AI running.
 ### 2. Clone the Repository
 
 ```bash
-git clone https://github.com/LMLK-seal/repo-helper-ai.git # Replace with your repo URL
+git clone https://github.com/LMLK-seal/repo-helper-ai.git 
 cd repo-helper-ai
 ```
 
