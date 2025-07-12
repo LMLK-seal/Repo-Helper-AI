@@ -5,3 +5,4 @@ PyGithub
 google-generativeai
 chromadb
 langchain-community  # For text splitting
+gunicorn
