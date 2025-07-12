@@ -1,0 +1,59 @@
+# --- Project Specific Files ---
+
+# Ignore the environment file containing secrets.
+# THIS IS THE MOST IMPORTANT LINE IN THIS FILE.
+.env
+
+# Ignore the local ChromaDB vector database folder.
+chroma/
+
+# Ignore log files, including our bot.log.
+*.log
+
+# Ignore downloaded binaries like ngrok.
+ngrok.exe
+*.exe
+
+
+# --- Python Virtual Environment ---
+
+# Ignore the virtual environment folder.
+venv/
+.venv/
+env/
+
+
+# --- Python Artifacts ---
+
+# Ignore Python bytecode files and caches.
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore distribution and build artifacts.
+/dist/
+/build/
+*.egg-info/
+*.egg
+*.whl
+
+
+# --- IDE / Editor Configuration ---
+
+# Ignore Visual Studio Code settings.
+.vscode/
+
+# Ignore PyCharm and other JetBrains IDE settings.
+.idea/
+
+# Ignore Sublime Text settings.
+*.sublime-*
+
+
+# --- Operating System Generated Files ---
+
+# Ignore macOS generated files.
+.DS_Store
+
+# Ignore Windows generated thumbnail cache files.
+Thumbs.db
