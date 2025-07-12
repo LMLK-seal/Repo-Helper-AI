@@ -158,6 +158,35 @@ Your Repo Helper AI is now live and ready to assist with new issues opened in yo
 
 ---
 
+⚠️ Important Disclosures & Considerations for production
+-----------------------------------------
+
+Please read the following considerations before deploying this project for production.
+
+### 1. Memory Usage and Free-Tier Limitations
+
+The full version of this bot, which includes the ability to answer questions using a vector database (RAG), is **memory-intensive**.
+
+*   **Local vs. Cloud:** Your local development machine (with 8GB+ of RAM) can easily handle loading the `ChromaDB` client and `GoogleGenerativeAI` models into memory.
+*   **Free-Tier Cloud Services:** Cloud hosting providers like **Render** offer a "Free Tier" which is excellent for simple web services but is typically limited to **512MB of RAM**.
+*   **Memory Exhaustion:** When the bot attempts to query the vector database (`vector_db.query_vector_db`), the memory usage can spike beyond the 512MB limit. The cloud platform's automated system will detect this "memory exhaustion" and immediately terminate (`SIGTERM`) the application to protect the platform. This is not a bug in the code, but a resource limitation of the hosting environment.
+
+**Recommendation:** To run the full-featured bot 24/7, it is highly recommended to use a paid hosting plan (e.g., Render's "Starter" plan) that provides at least 1GB of RAM.
+
+### 2. The "Triage-Only" Free Tier Alternative
+
+To allow you to run this bot on a free tier, this repository provides a lightweight, memory-efficient alternative. This version performs all the AI-powered triage and labeling but **disables the question-answering (RAG) feature** to avoid memory exhaustion.
+
+*   **Functionality:** The bot will still intelligently classify issues and post a polite confirmation message, but it will not query the vector database or attempt to answer questions.
+*   **How to Use:**
+    1.  Go to the `/triage_only_version` folder in this repository.
+    2.  Copy the `github_handler.py` file from that folder.
+    3.  Use it to **replace** the `github_handler.py` file in your main project directory.
+    4.  Commit and push this change to your repository.
+*   This simplified version has a very low memory footprint and will run smoothly on any free-tier hosting plan.
+
+---
+
 ☁️ Deployment (Production)
 -----------------------
 
@@ -190,6 +219,19 @@ To run the bot 24/7 without needing to keep your local computer on, you should d
 7.  Under the **Advanced** section, go to **Environment Variables**. Add all the keys from your local `.env` file here (`GITHUB_TOKEN`, `GEMINI_API_KEY`, etc.). **Do not use a `.env` file in production.**
 8.  Click **Create Web Service**. Render will automatically build and deploy your application.
 9.  Once deployed, Render will give you a public `https://...onrender.com` URL. Use **this URL** for your GitHub webhook's Payload URL. Now your bot is live 24/7!
+
+## Your Final Deployment Checklist
+
+Here is your checklist for the "Manage webhook" page to make your Render deployment live:
+
+1. Go to your repository settings, press "webhook" on the left side, and then  "Add webhook".
+2. **Payload URL:** Paste the **new public URL** provided by Render (e.g., https://your-app-name.onrender.com/api/github/webhook).
+3. **Content type:** Keep it as **application/json**.
+4. **Secret:** Ensure this contains the exact same GITHUB_WEBHOOK_SECRET value that you entered into Render's environment variables.
+5. **Events:** Make sure you have selected "Let me select individual events" and that only the **Issues** box is checked.
+6. **Active:** Ensure this is checked.
+
+Once you save the webhook with these settings, your bot will be fully operational in the cloud, 24/7. Go ahead and create a new issue in your repository to see it in action
 
 ---
 
