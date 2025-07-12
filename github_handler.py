@@ -1,7 +1,7 @@
-# github_handler.py (Final, Clean Version)
+# github_handler.py (Final, Robust Version)
 import traceback
 from github import Github
-import ai_services
+import ai_services # Our updated AI services
 import vector_db
 
 def handle_issue_opened(payload: dict, config: dict):
@@ -11,10 +11,12 @@ def handle_issue_opened(payload: dict, config: dict):
     """
     print("--- Background task started. ---")
     try:
-        # Initialize the GitHub client INSIDE the function with the passed token
         g = Github(config["GITHUB_TOKEN"])
+        # <-- CRITICAL CHANGE: Get the Gemini key from the passed config
+        gemini_api_key = config["GEMINI_API_KEY"]
 
         issue_data = payload['issue']
+        # ... (rest of the variable assignments are the same) ...
         issue_number = issue_data['number']
         title = issue_data['title']
         body = issue_data.get('body', '')
@@ -25,18 +27,13 @@ def handle_issue_opened(payload: dict, config: dict):
         issue = repo.get_issue(number=issue_number)
         print("Successfully connected to the issue.")
 
-        # Triage with AI
+        # Triage with AI, passing the key
         triage_prompt = ai_services.get_triage_prompt(title, body)
-        category = ai_services.generate_response(triage_prompt)
+        category = ai_services.generate_response(gemini_api_key, triage_prompt)
         print(f"Issue classified as: {category}")
 
-        # Labeling logic
-        label_map = {
-            "[General Question]": "question",
-            "[Bug Report]": "bug",
-            "[Feature Request]": "enhancement",
-            "[Installation Problem]": "installation-help",
-        }
+        # ... (Labeling logic is the same) ...
+        label_map = { "[General Question]": "question", "[Bug Report]": "bug", "[Feature Request]": "enhancement", "[Installation Problem]": "installation-help" }
         label = label_map.get(category)
         if label:
             issue.add_to_labels(label, "ai-triaged")
@@ -50,28 +47,22 @@ def handle_issue_opened(payload: dict, config: dict):
             context = vector_db.query_vector_db(full_question)
             print("Context retrieved from vector DB.")
             
+            # Generate the answer, passing the key
             answer_prompt = ai_services.get_answer_prompt(full_question, context)
-            ai_answer = ai_services.generate_response(answer_prompt)
+            ai_answer = ai_services.generate_response(gemini_api_key, answer_prompt)
             print("AI answer generated.")
             
-            comment_body = f"Hello @{user_login}!\n\n{ai_answer}\n\n---\n*I am an AI assistant. If this answer is incorrect or does not resolve your issue, a human maintainer will review it shortly.*"
+            comment_body = f"Hello @{user_login}!\n\n{ai_answer}\n\n---\n*I am an AI assistant...*"
             issue.create_comment(comment_body)
             print(f"SUCCESS: Posted AI answer to issue #{issue_number}.")
         else:
-            # --- THIS IS THE NEW, IMPROVED BLOCK ---
-            # Create more specific confirmation messages
-            triage_messages = {
-                "[Bug Report]": "Thank you for your submission! The team has been notified of this potential bug.",
-                "[Feature Request]": "Thank you for the great idea! This feature request has been logged for the team to review."
-            }
-            # Get the specific message, or a default one
+            # ... (Triage confirmation logic is the same) ...
+            triage_messages = { "[Bug Report]": "Thank you for your submission! The team has been notified of this potential bug.", "[Feature Request]": "Thank you for the great idea! This feature request has been logged for the team to review." }
             category_name = category.strip('[]')
             message = triage_messages.get(category, f"This issue has been automatically triaged as a **{category_name}**.")
-
             comment_body = f"Hello @{user_login}, {message} A maintainer will look at it soon."
             issue.create_comment(comment_body)
             print(f"SUCCESS: Posted triage confirmation to issue #{issue_number}.")
-            # --- END OF NEW BLOCK ---
 
     except Exception:
         print("\n!!!!!!!!!! AN ERROR OCCURRED IN THE BACKGROUND HANDLER !!!!!!!!!!\n")

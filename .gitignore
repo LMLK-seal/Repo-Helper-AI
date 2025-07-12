@@ -1,9 +1,5 @@
 # --- Project Specific Files ---
 
-# Ignore the environment file containing secrets.
-# THIS IS THE MOST IMPORTANT LINE IN THIS FILE.
-.env
-
 # Ignore the local ChromaDB vector database folder.
 chroma/
 
